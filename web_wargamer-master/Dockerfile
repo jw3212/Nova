@@ -1,4 +1,4 @@
-# Rocky Linux 9.3을 기본 이미지로 사용
+# Rocky Linux 9.3을 기본 이미지로 사용 빌드 테스트
 FROM rockylinux:9.3.20231119-minimal
 
 # dnf 패키지 관리자 설치
