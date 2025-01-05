@@ -31,3 +31,5 @@ spec:
           value: "wargame"
         - name: DB_PASSWORD
           value: "1234"
+      imagePullSecrets:
+      - name: registry-secret
