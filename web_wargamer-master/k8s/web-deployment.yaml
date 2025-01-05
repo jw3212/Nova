@@ -18,6 +18,8 @@ spec:
       - name: wargame-web
         image: 10.244.5.2:5000/wargame-web:latest
         imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
         ports:
         - containerPort: 80
         env:
@@ -31,5 +33,3 @@ spec:
           value: "wargame"
         - name: DB_PASSWORD
           value: "1234"
-      imagePullSecrets:
-      - name: registry-secret
