@@ -31,7 +31,7 @@ spec:
           mountPath: /image-name
       containers:
       - name: wargame-web
-        image: $(cat /image-name/image)
+        image: localhost:5000/wargame-web:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 80
