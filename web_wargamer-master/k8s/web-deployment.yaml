@@ -1,4 +1,3 @@
-# k8s-yaml/web-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,9 +14,24 @@ spec:
     spec:
       nodeSelector:
         node-type: webserver
+      initContainers:
+      - name: check-image
+        image: docker:cli
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          if docker pull localhost:5000/wargame-web:latest; then
+            echo "localhost:5000/wargame-web:latest" > /image-name/image
+          else
+            echo "wargame-web:latest" > /image-name/image
+          fi
+        volumeMounts:
+        - name: image-name
+          mountPath: /image-name
       containers:
       - name: wargame-web
-        image: wargame-web:latest
+        image: $(cat /image-name/image)
         imagePullPolicy: Never
         ports:
         - containerPort: 80
@@ -32,3 +46,9 @@ spec:
           value: "wargame"
         - name: DB_PASSWORD
           value: "1234"
+        volumeMounts:
+        - name: image-name
+          mountPath: /image-name
+      volumes:
+      - name: image-name
+        emptyDir: {}
