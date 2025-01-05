@@ -1,6 +1,10 @@
 # Ubuntu 20.04를 기본 이미지로 사용
 FROM ubuntu:20.04
 
+# 비대화형 설치를 위한 환경변수 설정
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Seoul
+
 # 작업 디렉토리 설정
 WORKDIR /var/www/html
 
