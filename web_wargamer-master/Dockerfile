@@ -1,6 +1,10 @@
 FROM ubuntu:20.04
 WORKDIR /var/www/html
 
+# 비대화형 설치를 위한 환경변수 설정
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Seoul
+
 # MariaDB와 Apache 패키지 설치
 RUN apt-get update && apt-get install -y \
     apache2 \
