@@ -14,25 +14,10 @@ spec:
     spec:
       nodeSelector:
         node-type: webserver
-      initContainers:
-      - name: check-image
-        image: docker:cli
-        command: 
-        - /bin/sh
-        - -c
-        - |
-          if docker pull localhost:5000/wargame-web:latest; then
-            echo "localhost:5000/wargame-web:latest" > /image-name/image
-          else
-            echo "wargame-web:latest" > /image-name/image
-          fi
-        volumeMounts:
-        - name: image-name
-          mountPath: /image-name
       containers:
       - name: wargame-web
-        image: $(cat /image-name/image)
-        imagePullPolicy: Never
+        image: 10.244.3.2:5000/wargame-web:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
         env:
@@ -46,9 +31,3 @@ spec:
           value: "wargame"
         - name: DB_PASSWORD
           value: "1234"
-        volumeMounts:
-        - name: image-name
-          mountPath: /image-name
-      volumes:
-      - name: image-name
-        emptyDir: {}
