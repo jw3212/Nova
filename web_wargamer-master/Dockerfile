@@ -1,23 +1,39 @@
-# Ubuntu 20.04를 기본 이미지로 사용
 FROM ubuntu:20.04
 
 # 비대화형 설치를 위한 환경변수 설정
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Seoul
 
-# 작업 디렉토리 설정
 WORKDIR /var/www/html
 
-# 시스템 패키지 업데이트 및 필요한 패키지 설치
-RUN apt-get update && \
-    apt-get install -y apache2 php php-cli php-fpm php-mysql php-json php-opcache php-xml mariadb-server procps && \
-    apt-get clean
+# MariaDB와 Apache 패키지 설치
+RUN apt-get update && apt-get install -y \
+    apache2 \
+    php \
+    php-cli \
+    php-fpm \
+    php-mysql \
+    php-json \
+    php-opcache \
+    php-xml \
+    mariadb-server \
+    mariadb-client \
+    procps \
+    && apt-get clean
 
-# Apache 설정 파일에서 ServerName 설정 추가
+# Apache 모듈 설정
+RUN a2enmod proxy && \
+    a2enmod proxy_fcgi && \
+    a2enmod proxy_http
+
+# MariaDB 권한 설정
+RUN mkdir -p /var/run/mysqld && \
+    chown mysql:mysql /var/run/mysqld && \
+    chmod 755 /var/run/mysqld
+
+# Apache 설정
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
-    echo "LoadModule proxy_module modules/mod_proxy.so" >> /etc/apache2/apache2.conf && \
-    echo "LoadModule proxy_fcgi_module modules/mod_proxy_fcgi.so" >> /etc/apache2/apache2.conf && \
-    echo "ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/html/\$1" >> /etc/apache2/apache2.conf
+    echo "ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/html/$1" >> /etc/apache2/apache2.conf
 
 # PHP 설정
 RUN sed -i 's/;date.timezone =/date.timezone = Asia\/Seoul/g' /etc/php/7.4/cli/php.ini && \
@@ -27,18 +43,18 @@ RUN sed -i 's/;date.timezone =/date.timezone = Asia\/Seoul/g' /etc/php/7.4/cli/p
 # MariaDB 초기 설정
 RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
 
-# MariaDB 보안 설정 및 초기 DB/사용자 설정
+# MariaDB 설정
 RUN echo "[mysqld]" >> /etc/mysql/mariadb.conf.d/50-server.cnf && \
     echo "port = 3306" >> /etc/mysql/mariadb.conf.d/50-server.cnf && \
     echo "bind-address = 0.0.0.0" >> /etc/mysql/mariadb.conf.d/50-server.cnf && \
     echo "default-authentication-plugin = mysql_native_password" >> /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# MariaDB 초기화 스크립트 디렉토리 생성
+# 초기화 스크립트 디렉토리 생성
 RUN mkdir -p /docker-entrypoint-initdb.d
 
-# MariaDB 초기화 스크립트 생성
+# DB 초기화 스크립트 생성
 RUN printf '#!/bin/bash\n\
-/usr/sbin/mariadbd --user=mysql &\n\
+/usr/sbin/mysqld --user=mysql &\n\
 sleep 5\n\
 mysql -e "CREATE DATABASE IF NOT EXISTS LED_WG;" && \
 mysql -e "CREATE USER IF NOT EXISTS '\''root'\''@'\''localhost'\'' IDENTIFIED BY '\''1234'\''" && \
@@ -76,7 +92,7 @@ mysql -e "CREATE TABLE user_data ( \
     FOREIGN KEY (d_uid) REFERENCES users(u_id) ON DELETE CASCADE ON UPDATE CASCADE, \
     FOREIGN KEY (d_cid) REFERENCES challenges_data(c_id) ON DELETE CASCADE ON UPDATE CASCADE \
 );" \n\
-pkill mariadbd\n\
+pkill mysqld\n\
 sleep 5\n' > /docker-entrypoint-initdb.d/init-db.sh && \
     chmod +x /docker-entrypoint-initdb.d/init-db.sh
 
@@ -94,26 +110,17 @@ RUN npm install
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html
 
-# 포트 설정
-EXPOSE 80 3306
-
-# 서비스 시작 스크립트 생성
+# 시작 스크립트 생성
 RUN printf '#!/bin/bash\n\
-# DB 초기화 스크립트 실행\n\
 /docker-entrypoint-initdb.d/init-db.sh\n\
 \n\
-# MariaDB 시작\n\
-/usr/sbin/mariadbd --user=mysql &\n\
+/usr/sbin/mysqld --user=mysql &\n\
 \n\
-# PHP-FPM 시작\n\
 /usr/sbin/php-fpm7.4 &\n\
 \n\
-# MariaDB가 완전히 시작될 때까지 대기\n\
 sleep 5\n\
 \n\
-# Apache 시작 (포그라운드로 실행)\n\
-/usr/sbin/apache2ctl -D FOREGROUND' > /start.sh && \
-chmod +x /start.sh
+/usr/sbin/apache2ctl -D FOREGROUND' > /start.sh && chmod +x /start.sh
 
-# 컨테이너 시작 시 실행할 명령
+# 실행 명령
 CMD ["/start.sh"]
