@@ -7,25 +7,49 @@ DevSecOps 방법론을 적용한 웹 애플리케이션 개발 및 운영 환경
 ## 기술 스택
 - **컨테이너 오케스트레이션**: Kubernetes (Kind)
 - **CI/CD**: Jenkins
-- **로깅 & 모니터링**: ELK Stack (Elasticsearch, Logstash, Kibana)
 - **웹 서비스**: Apache, PHP
 - **버전 관리**: Git, GitHub
 
 ## 프로젝트 구조
 ```
-.
-├── docs/                    # 문서화 자료
-├── ELK/                    # Elasticsearch, Logstash, Kibana 스택
-│   └── k8s/                # ELK 스택 Kubernetes 매니페스트
-├── Jenkins/                # Jenkins CI/CD 서버
-│   └── k8s/                # Jenkins Kubernetes 매니페스트
-├── Kubernetes/             # Kubernetes 클러스터 설정
-│   ├── deploy.bat          # 클러스터 생성 스크립트
-│   ├── kind-config.yaml    # Kind 클러스터 설정
-│   └── reset-cluster.bat   # 클러스터 초기화 스크립트
-└── Web/                    # 웹 애플리케이션
-    ├── src/                # 소스 코드
-    └── k8s/                # 웹 서비스 Kubernetes 매니페스트
+📁 Nova
+├── 🔍 ELK/                                    # Elasticsearch, Logstash, Kibana 스택
+│   └── 📦 k8s/                                # ELK 스택 Kubernetes 매니페스트
+│       ├── ⚙️ elasticsearch.yaml              # Elasticsearch 설정
+│       ├── ⚙️ kibana.yaml                     # Kibana 설정
+│       ├── ⚙️ logstash.yaml                   # Logstash 설정
+│       ├── 🐋 docker-compose.yml              # ELK 스택 Docker Compose 설정
+│       └── ⚙️ logstash.conf                   # Logstash 파이프라인 설정
+│       
+├── 🔧 Jenkins/                                # Jenkins CI/CD 서버
+│   └── 📦 k8s/                                # Jenkins Kubernetes 매니페스트
+│       ├── ⚙️ jenkins-deployment.yaml         # Jenkins 배포 설정
+│       ├── ⚙️ jenkins-pv.yaml                 # Jenkins 영구 볼륨 설정
+│       ├── ⚙️ ngrok-secret.yaml               # Jenkins ngrok 연동 설정
+│       ├── ⚙️ jenkins-service.yaml            # Jenkins 서비스 설정
+│       ├── ⚙️ network-policy.yaml
+│       ├── ⚙️ serviceaccount.yaml
+│       ├── ⚙️ role.yaml
+│       ├── ⚙️ rolebinding.yaml 
+│       ├── ⚙️ clusterrole.yaml
+│       ├── ⚙️ clusterrolebinding.yaml
+│       ├── ⚙️ postgres-deployment.yaml
+│       ├── ⚙️ sonarqube-deployment.yaml
+│       └── ⚙️ services.yaml
+│       
+├── ☸️ Kubernetes/                             # Kubernetes 클러스터 설정
+│   └── ⚙️ kind-config.yaml                    # Kind 클러스터 설정
+│   
+└── 🎯 web_wargamer/                           # 워게임 웹 애플리케이션
+    ├── 💾 backup/                             # 백업 디렉토리
+    ├── 📦 k8s/                                # Kubernetes 매니페스트
+    │   ├── ⚙️ db-deployment.yaml              # 데이터베이스 배포 설정
+    │   ├── ⚙️ db-init-configmap.yaml          # DB 초기화 ConfigMap
+    │   ├── ⚙️ services.yaml                   # 서비스 설정
+    │   └── ⚙️ web-deployment.yaml             # 웹 애플리케이션 배포 설정
+    ├── 🌐 web/                                # 웹 애플리케이션 소스 코드
+    ├── 🐳 Dockerfile                          # 웹 애플리케이션 도커 이미지 설정
+    └── 📄 .gitignore                          # Git 무시 파일 설정
 ```
 
 ## 컴포넌트 설명
@@ -41,13 +65,7 @@ DevSecOps 방법론을 적용한 웹 애플리케이션 개발 및 운영 환경
 - Kubernetes 매니페스트를 통한 컨테이너화된 Jenkins 배포
 - 보안 취약점 스캔 및 코드 품질 검사 통합
 
-### 3. ELK 스택 (/ELK)
-- 중앙 집중식 로깅 시스템
-- 실시간 로그 수집 및 분석
-- 시각화된 모니터링 대시보드
-- 보안 이벤트 감지 및 알림
-
-### 4. 웹 애플리케이션 (/Web)
+### 3. 웹 애플리케이션 (/Web)
 - Apache와 PHP 기반의 웹 서비스
 - Kubernetes에 최적화된 컨테이너 구성
 - 보안 강화를 위한 설정 적용
@@ -78,13 +96,7 @@ cd ..\Jenkins
 .\jenkins-service.bat
 ```
 
-4. ELK 스택 배포:
-```bash
-cd ..\ELK
-.\ELK.bat
-```
-
-5. 웹 서비스 배포:
+4. 웹 서비스 배포:
 ```bash
 cd ..\Web
 .\web-service.bat
@@ -93,7 +105,6 @@ cd ..\Web
 ## 접속 정보
 - Jenkins: http://localhost:8080
 - Kibana: http://localhost:5601
-- Elasticsearch: http://localhost:9200
 - 웹 서비스: http://localhost:30080
 
 ## 참고 자료
