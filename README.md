@@ -104,6 +104,7 @@ cd ..\Web
 
 ## 접속 정보
 - Jenkins: http://localhost:8080
+- Sonarqube: http://localhost:30900
 - Kibana: http://localhost:5601
 - 웹 서비스: http://localhost:30080
 
