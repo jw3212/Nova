@@ -1,4 +1,5 @@
- # DevSecOps 프로젝트
+# 프로젝트 Nova
+![alt text](image.png)
 
 ## 프로젝트 개요
 DevSecOps 방법론을 적용한 웹 애플리케이션 개발 및 운영 환경 구축 프로젝트입니다. 
