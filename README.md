@@ -109,5 +109,13 @@ cd ..\Web
 - Kibana: http://localhost:5601
 - 웹 서비스: http://localhost:30080
 
+## 보안 검사
+1. Jenkins 파이프라인에서 자동으로 SonarQube 정적 분석 수행
+2. 코드 품질 및 보안 취약점 리포트 생성
+3. 품질 게이트 기준에 따른 배포 승인/거부
+
 ## 참고 자료
-- https://github.com/GH6679/web_wargamer.git (웹 서비스 소스 코드)
+- Kubernetes: https://kubernetes.io/
+- Jenkins: https://www.jenkins.io/
+- SonarQube: https://www.sonarqube.org/
+- Apache: https://httpd.apache.org/
