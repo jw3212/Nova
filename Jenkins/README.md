@@ -44,6 +44,7 @@ jenkins-service.bat
 
 ```bash
 kubectl apply -f k8s\jenkins-pv.yaml
+kubectl apply -f k8s/ngrok-secret.yaml
 kubectl apply -f k8s\network-policy.yaml
 kubectl apply -f k8s\serviceaccount.yaml
 kubectl apply -f k8s\role.yaml
