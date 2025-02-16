@@ -43,10 +43,15 @@ jenkins-service.bat
 #### 수동 배포
 
 ```bash
-kubectl apply -f k8s/jenkins-pv.yaml
-kubectl apply -f k8s/ngrok-secret.yaml
-kubectl apply -f k8s/jenkins-deployment.yaml
-kubectl apply -f k8s/jenkins-service.yaml
+kubectl apply -f k8s\jenkins-pv.yaml
+kubectl apply -f k8s\network-policy.yaml
+kubectl apply -f k8s\serviceaccount.yaml
+kubectl apply -f k8s\role.yaml
+kubectl apply -f k8s\rolebinding.yaml 
+kubectl apply -f k8s\clusterrole.yaml
+kubectl apply -f k8s\clusterrolebinding.yaml
+kubectl apply -f k8s\jenkins-deployment.yaml
+kubectl apply -f k8s\jenkins-service.yaml
 ```
 
 ## Jenkins 접속
