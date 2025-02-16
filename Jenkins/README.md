@@ -11,10 +11,19 @@
 ```
 Jenkins/
 ├── k8s/
-│   ├── jenkins-deployment.yaml  # Jenkins 배포 설정
-│   ├── jenkins-service.yaml     # Jenkins 서비스 설정
-│   ├── jenkins-pv.yaml         # 영구 스토리지 설정
-│   └── ngrok-secret.yaml       # Ngrok 인증 정보
+│       ├── jenkins-deployment.yaml         # Jenkins 배포 설정
+│       ├── jenkins-pv.yaml                 # Jenkins 영구 스토리지 설정
+│       ├── ngrok-secret.yaml               # Ngrok 인증 정보
+│       ├── jenkins-service.yaml            # Jenkins 서비스 설정
+│       ├── network-policy.yaml
+│       ├── serviceaccount.yaml
+│       ├── role.yaml
+│       ├── rolebinding.yaml 
+│       ├── clusterrole.yaml
+│       ├── clusterrolebinding.yaml
+│       ├── postgres-deployment.yaml
+│       ├── sonarqube-deployment.yaml
+│       └── services.yaml
 └── jenkins-service.bat         # Jenkins 서비스 실행 스크립트
 ```
 
@@ -40,7 +49,7 @@ Jenkins/
 jenkins-service.bat
 ```
 
-#### 수동 배포
+#### 수동 배포(Jenkins)
 
 ```bash
 kubectl apply -f k8s\jenkins-pv.yaml
@@ -55,11 +64,24 @@ kubectl apply -f k8s\jenkins-deployment.yaml
 kubectl apply -f k8s\jenkins-service.yaml
 ```
 
+#### 수동 배포(Sonarqube)
+
+```bash
+kubectl apply -f k8s\postgres-deployment.yaml
+kubectl apply -f k8s\sonarqube-deployment.yaml
+kubectl apply -f k8s\services.yaml
+```
+
 ## Jenkins 접속
 
 ### 로컬 접속
 - 웹 UI: http://localhost:8080
 - JNLP: localhost:50000
+
+## Sonarqube 접속
+
+### 로컬 접속
+- 웹 UI: http://localhost:30900
 
 ### 외부 접속 (Ngrok)
 Ngrok URL 확인:
